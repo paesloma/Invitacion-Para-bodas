@@ -1,170 +1,122 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 1. CONFIGURACIÓN DE PÁGINA
-st.set_page_config(page_title="Boda P&J", page_icon="💍", layout="centered")
+st.set_page_config(page_title="P&J - Boda", page_icon="💍", layout="wide")
 
-# Inicialización del estado del sobre
 if 'abierto' not in st.session_state:
     st.session_state.abierto = False
 
-# Captura de parámetros para personalización (Ej: ?invitado=Ana_y_Luis)
 params = st.query_params
-nombre = params.get("invitado", "Invitado Especial").replace("_", " ")
+invitado = params.get("invitado", "Invitado Especial").replace("_", " ")
 
-# 2. LÓGICA DE PANTALLAS
 if not st.session_state.abierto:
-    # --- PANTALLA A: EL SOBRE CERRADO (Fotorrealista) ---
-
-    # Este bloque de HTML/CSS recrea la estética de tu referencia.
-    # Incluye texturas, gradientes metálicos y el sello de cera detallado.
-    envelope_html = f"""
+    # Diseño de alta gama con sombras ambientales y texturas
+    html_luxury = f"""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,700&display=swap');
-        
-        .main-container {{
-            display: flex; flex-direction: column; align-items: center;
-            justify-content: center; height: 100vh; cursor: pointer;
-            background-color: #111; /* Fondo oscuro para resaltar el sobre */
-        }}
-        
-        /* CUERPO DEL SOBRE: Azul marino con textura de papel */
-        .envelope {{
-            position: relative; width: 550px; height: 380px;
-            background-color: #2c3e50;
-            background-image: 
-                linear-gradient(30deg, #2c3e50 12%, transparent 12.5%, transparent 87%, #2c3e50 87.5%, #2c3e50),
-                linear-gradient(150deg, #2c3e50 12%, transparent 12.5%, transparent 87%, #2c3e50 87.5%, #2c3e50),
-                linear-gradient(30deg, #2c3e50 12%, transparent 12.5%, transparent 87%, #2c3e50 87.5%, #2c3e50),
-                linear-gradient(150deg, #2c3e50 12%, transparent 12.5%, transparent 87%, #2c3e50 87.5%, #2c3e50),
-                linear-gradient(60deg, #34495e 25%, transparent 25.5%, transparent 75%, #34495e 75.5%, #34495e),
-                linear-gradient(60deg, #34495e 25%, transparent 25.5%, transparent 75%, #34495e 75.5%, #34495e);
-            background-size: 80px 140px; background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
-            border-radius: 0 0 15px 15px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            transition: transform 0.3s ease;
-        }}
-        .envelope:hover {{ transform: translateY(-5px); }}
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&display=swap');
 
-        /* SOLAPA DORADA METÁLICA con degradado fotorrealista */
+        .viewport {{
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; background: #0a0a0a; overflow: hidden;
+        }}
+
+        /* EL SOBRE */
+        .envelope {{
+            position: relative; width: 600px; height: 400px;
+            background: #1c2a38; /* Azul Noche Profundo */
+            /* Textura de papel lino */
+            background-image: url("https://www.transparenttextures.com/patterns/linen-paper.png");
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+            cursor: pointer;
+        }}
+
+        /* SOLAPA DORADA CON RELIEVE */
         .flap {{
             position: absolute; top: 0; left: 0; width: 0; height: 0;
-            border-left: 275px solid transparent;
-            border-right: 275px solid transparent;
-            /* Degradado complejo para simular metal dorado cepillado */
-            border-top: 220px solid #d4af37;
-            border-image: linear-gradient(to bottom, #f7e082 0%, #d4af37 40%, #b8902d 60%, #eacb5f 100%) 1;
-            transform-origin: top;
-            transition: transform 0.7s ease-in-out;
-            z-index: 3;
-            border-radius: 10px 10px 0 0;
+            border-left: 300px solid transparent;
+            border-right: 300px solid transparent;
+            border-top: 240px solid #c5a059;
+            /* Degradado de metal real */
+            border-image: linear-gradient(145deg, #e6c673 0%, #c5a059 45%, #8a6d29 100%) 1;
+            z-index: 3; transform-origin: top;
+            transition: all 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.4));
         }}
 
-        /* SELLO DE CERA ROJO con P&J caligráficas (SVG inyectado) */
-        .seal {{
-            position: absolute; top: 160px; left: 215px;
-            width: 120px; height: 120px;
-            /* Rojo cera con degradado radial para relieve */
-            background: radial-gradient(circle, #b22222 0%, #8b0000 70%, #660000 100%);
+        /* SELLO DE CERA PREMIUM */
+        .wax-seal {{
+            position: absolute; top: 180px; left: 50%;
+            transform: translateX(-50%);
+            width: 110px; height: 110px;
+            background: radial-gradient(circle at 30% 30%, #a52a2a, #800000 70%, #4d0000);
             border-radius: 50%; z-index: 4;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.6), 0 10px 20px rgba(0,0,0,0.4);
-            border: 3px solid #a52a2a;
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.6);
+            border: 2px solid #5e0000;
+            transition: 0.5s;
         }}
 
-        /* Efectos de apertura al hacer clic */
-        .opened .flap {{ transform: rotateX(180deg); z-index: 1; }}
-        .opened .seal {{ opacity: 0; transform: translateY(-20px) scale(1.2); }}
+        .seal-text {{
+            color: #d4af37; font-family: 'Great Vibes', cursive;
+            font-size: 40px; text-shadow: 2px 2px 3px rgba(0,0,0,0.4);
+            user-select: none;
+        }}
 
-        /* Texto de destinatario elegante */
+        /* DETALLES FINALES */
         .recipient {{
-            position: absolute; bottom: 40px; width: 100%;
-            text-align: center; color: #f4f1ea;
-            font-family: 'Playfair Display', serif;
-            font-style: italic; letter-spacing: 2px; font-size: 16px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            z-index: 2;
+            position: absolute; bottom: 60px; width: 100%; text-align: center;
+            color: rgba(212, 175, 55, 0.8); font-family: 'Cinzel', serif;
+            letter-spacing: 5px; font-size: 14px; text-transform: uppercase;
         }}
-        
-        .instruction {{
-            margin-top: 30px; color: #aaa; font-family: serif; font-style: italic;
-        }}
+
+        /* ANIMACIÓN DE APERTURA */
+        .envelope.open .flap {{ transform: rotateX(180deg); z-index: 1; }}
+        .envelope.open .wax-seal {{ opacity: 0; transform: translateX(-50%) scale(1.5); }}
+
     </style>
 
-    <div class="main-container" onclick="openEnvelope()">
-        <div class="envelope" id="envelope">
+    <div class="viewport" onclick="openMe()">
+        <div class="envelope" id="env">
             <div class="flap"></div>
-            <div class="seal">
-                <svg viewBox="0 0 100 100" width="80" height="80">
-                    <defs>
-                        <linearGradient id="goldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" style="stop-color:#f7e082;stop-opacity:1" />
-                            <stop offset="50%" style="stop-color:#d4af37;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#b8902d;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <text x="50%" y="65%" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="700" font-style="italic" font-size="50" fill="url(#goldGradient)" style="filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.5));">
-                        P&J
-                    </text>
-                </svg>
+            <div class="wax-seal">
+                <span class="seal-text">P&J</span>
             </div>
-            <div class="recipient">PARA: {nombre.upper()}</div>
+            <div class="recipient">Para: {invitado}</div>
         </div>
-        <p class="instruction">Haz clic en el sello para abrir</p>
     </div>
 
     <script>
-        function openEnvelope() {{
-            document.getElementById('envelope').classList.add('opened');
-            // Esperamos a que la animación termine para avisar a Streamlit
+        function openMe() {{
+            document.getElementById('env').classList.add('open');
             setTimeout(() => {{
                 window.parent.postMessage({{type: 'streamlit:setComponentValue', value: true}}, '*');
-            }}, 800);
+            }}, 1000);
         }}
     </script>
     """
+    components.html(html_luxury, height=800)
 
-    # Renderizamos el sobre interactivo. 'height=750' asegura que la solapa dorada no se corte al abrirse.
-    components.html(envelope_html, height=750)
-
-    # Botón de respaldo (invisible o secundario) por seguridad
-    st.write("---")
-    if st.button("ENTRAR A LA INVITACIÓN", type="secondary", use_container_width=True):
+    # Botón elegante para invitados que no tienen JS habilitado
+    if st.button("ABRIR INVITACIÓN", type="primary", use_container_width=True):
         st.session_state.abierto = True
         st.rerun()
 
 else:
-    # --- PANTALLA B: CONTENIDO DETALLADO (Invitación Abierta) ---
+    # --- PANTALLA DE LA INVITACIÓN ---
     st.balloons()
     
-    # Restaura el fondo claro para el contenido
     st.markdown(f"""
-        <h1 style='text-align: center; color: #d4af37; font-family:serif; font-size: 50px; margin-bottom:0;'>
-            ¡Bienvenidos!
-        </h1>
-        <h2 style='text-align: center; color: #2c3e50; margin-top:0;'>
-            {nombre}
-        </h2>
+        <div style='text-align: center; padding: 50px; border: 2px solid #d4af37; background: #fff; border-radius: 15px;'>
+            <h1 style='font-family: Cinzel; color: #1c2a38; font-size: 50px;'>¡Bienvenidos!</h1>
+            <p style='font-family: Great Vibes; font-size: 35px; color: #d4af37;'>{invitado}</p>
+            <hr style='border-top: 1px solid #d4af37; width: 50%; margin: auto;'>
+            <br>
+            <p style='font-family: Cinzel; letter-spacing: 2px;'>Estamos emocionados de compartir nuestro día con ustedes.</p>
+        </div>
     """, unsafe_allow_html=True)
     
-    st.divider()
-    
-    # Resumen de detalles (Este apartado ya es totalmente funcional)
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Fecha", "25 Julio")
-    col2.metric("Lugar", "Cuenca")
-    col3.metric("Pases", "2")
-
-    st.divider()
-    
-    # Formulario RSVP (Guardado de datos, etc.)
-    st.subheader("Confirmar Asistencia")
-    with st.form("rsvp"):
-        st.radio("¿Nos acompañas?", ["Sí, confirmo", "Lo siento, no puedo"])
-        st.text_area("Mensaje para Pablo y Joy")
-        st.form_submit_button("Enviar RSVP")
-
-    if st.button("← Ver sobre de nuevo"):
+    # Aquí puedes agregar el mapa dinámico de Cuenca y el RSVP
+    if st.button("← Cerrar"):
         st.session_state.abierto = False
         st.rerun()
